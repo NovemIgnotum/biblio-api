@@ -1,1 +1,28 @@
-/venv
+# Environnements virtuels
+/venv/
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Fichiers d'environnement
+.env
+.env.*
+
+# Configurations spécifiques à l'IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Dépendances installées localement
+*.egg-info/
+dist/
+build/
+
+# Caches de tests
+.pytest_cache/
+.tox/
+.coverage
+htmlcov/

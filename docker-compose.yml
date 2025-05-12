@@ -1,29 +1,18 @@
 version: '3.8'
 
 services:
-  # API FastAPI
-  api:
-    build: .
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://user:password@postgres:5432/biblio
-      - MONGODB_URL=mongodb://mongo:27017
-    depends_on:
-      - postgres
-      - mongo
-    volumes:
-      - ./app:/app/app  # Montage du code en dev
-
   # Base PostgreSQL (SQL)
   postgres:
     image: postgres:13-alpine
+    container_name: postgres-db
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: biblio
     volumes:
       - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d biblio"]
       interval: 5s
@@ -33,6 +22,7 @@ services:
   # Base MongoDB (NoSQL)
   mongo:
     image: mongo:6.0
+    container_name: mongo-db
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
@@ -46,17 +36,22 @@ services:
       timeout: 5s
       retries: 5
 
-  # pgAdmin
+  # pgAdmin (interface PostgreSQL)
   pgadmin:
     image: dpage/pgadmin4
+    container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: password
     ports:
       - "5050:80"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
 
 volumes:
   pgdata:
   mongodata:
+  pgadmin_data:
